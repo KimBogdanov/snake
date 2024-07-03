@@ -73,13 +73,19 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 24px; /* Увеличили размер шрифта кнопок управления */
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 15px;
             width: 100px; /* Ширина кнопок управления */
         }
+
+        #upBtn, #downBtn, #leftBtn, #rightBtn {
+            height: 25%; /* Высота кнопок управления, занимающих 1/4 пространства по высоте */
+            margin: 5px 0; /* Между кнопками управления */
+        }
+
 
         .control-button:hover {
             background-color: #3e8e41;
