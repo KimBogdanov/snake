@@ -297,7 +297,22 @@
 
     async function fetchChampions() {
         try {
-            const response = await fetch('http://localhost:7070/champions');
+            const response = await fetch('http://localhost:7070/save');
+            if (response.ok) {
+                const data = await response.json();
+                displayChampions(data);
+                championsTable.style.display = 'block'; // Показать таблицу лидеров
+            } else {
+                throw new Error('Ошибка при получении данных');
+            }
+        } catch (error) {
+            alert('Ошибка: ' + error.message);
+        }
+    }
+
+    async function fetchChampions() {
+        try {
+            const response = await fetch('http://localhost:7070/save');
             if (response.ok) {
                 const data = await response.json();
                 displayChampions(data);
