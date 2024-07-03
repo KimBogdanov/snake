@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Змейка</title>
-    <meta charset="utf-8">
     <style>
         body {
             margin: 0;
@@ -12,31 +12,35 @@
             align-items: center;
             min-height: 100vh;
             flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 10px;
+            width: 100vw;
+            max-width: 400px;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         canvas {
             background-color: #eee;
             border: 4px solid #000;
-            z-index: 1;
+            width: 100%;
+            height: auto;
         }
 
         #scoreboard {
             color: #fff;
             font-size: 18px;
-            margin-bottom: 10px;
+            text-align: center;
         }
 
         #controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-        }
-
-        .controls-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
@@ -47,35 +51,23 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            width: 60px;
-        }
-
-        .control-button.round {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 10px;
+            height: 50px;
         }
 
         .control-button:hover {
             background-color: #3e8e41;
         }
 
-        .left-btn {
-            height: 130px;
+        .restart-btn, .champions-btn {
+            border-radius: 4px;
+            height: 50px;
         }
 
-        .up-btn, .down-btn {
-            height: 60px;
-        }
-
-        .right-btn {
-            height: 130px;
-        }
-
-        #gameOverMenu {
+        #gameOverMenu, #championsMenu {
             display: none;
             flex-direction: column;
             align-items: center;
@@ -83,46 +75,38 @@
             background-color: #eee;
             border: 4px solid #000;
             padding: 20px;
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 2;
         }
 
-        #gameOverMenu input, #gameOverMenu button {
+        #gameOverMenu input, #gameOverMenu button, #championsMenu button {
             padding: 8px;
             font-size: 16px;
-            width: 200px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        #saveBtn {
-            padding: 8px 16px; /* Прямоугольная кнопка */
+        #saveBtn, #closeChampionsBtn {
+            padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            width: auto;
+            margin-top: 10px;
         }
 
-        #saveBtn:hover {
+        #saveBtn:hover, #closeChampionsBtn:hover {
             background-color: #3e8e41;
         }
 
-        #championsTableContainer {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #eee;
-            border: 4px solid #000;
-            padding: 20px;
-            z-index: 3;
-        }
-
         #championsTable {
+            margin-top: 20px;
             width: 100%;
             border-collapse: collapse;
         }
@@ -140,29 +124,25 @@
     </style>
 </head>
 <body>
-<div id="scoreboard">Счёт: 0</div>
-<div style="position: relative;">
+<div class="container">
+    <div id="scoreboard">Счёт: 0</div>
     <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <div id="gameOverMenu">
-        <p>Игра окончена!</p>
-        <input type="text" id="playerName" placeholder="Ваше имя">
-        <button id="saveBtn">Сохранить</button>
+    <div id="controls">
+        <button id="restartBtn" class="control-button restart-btn">Рестарт</button>
+        <button id="upBtn" class="control-button">Вверх</button>
+        <button id="championsBtn" class="control-button champions-btn">Лидеры</button>
+        <button id="leftBtn" class="control-button">Влево</button>
+        <button id="downBtn" class="control-button">Вниз</button>
+        <button id="rightBtn" class="control-button">Вправо</button>
     </div>
-</div>
-<div id="controls">
-    <div id="left-controls">
-        <button id="restartBtn" class="control-button round">Рестарт</button>
-        <button id="championsBtn" class="control-button round">Чемпионы</button>
-    </div>
-    <button id="leftBtn" class="control-button left-btn">Влево</button>
-    <div class="controls-column">
-        <button id="upBtn" class="control-button up-btn">Вверх</button>
-        <button id="downBtn" class="control-button down-btn">Вниз</button>
-    </div>
-    <button id="rightBtn" class="control-button right-btn">Вправо</button>
 </div>
 
-<div id="championsTableContainer">
+<div id="gameOverMenu">
+    <p>Игра окончена!</p>
+    <input type="text" id="playerName" placeholder="Ваше имя">
+    <button id="saveBtn">Сохранить</button>
+</div>
+<div id="championsMenu">
     <table id="championsTable">
         <thead>
         <tr>
@@ -175,6 +155,7 @@
         <!-- Здесь будут строки таблицы с данными о чемпионах -->
         </tbody>
     </table>
+    <button id="closeChampionsBtn">Закрыть</button>
 </div>
 
 <script>
@@ -189,7 +170,8 @@
     const gameOverMenu = document.getElementById('gameOverMenu');
     const saveBtn = document.getElementById('saveBtn');
     const championsBtn = document.getElementById('championsBtn');
-    const championsTableContainer = document.getElementById('championsTableContainer');
+    const championsMenu = document.getElementById('championsMenu');
+    const closeChampionsBtn = document.getElementById('closeChampionsBtn');
     const championsTableBody = document.getElementById('championsBody');
 
     const gridSize = 20;
@@ -287,6 +269,7 @@
             });
             if (response.ok) {
                 alert('Результат сохранен');
+                gameOverMenu.style.display = 'none'; // Закрыть меню "Игра окончена" после сохранения
             } else {
                 alert('Ошибка при сохранении результата');
             }
@@ -301,21 +284,7 @@
             if (response.ok) {
                 const data = await response.json();
                 displayChampions(data);
-                championsTable.style.display = 'block'; // Показать таблицу лидеров
-            } else {
-                throw new Error('Ошибка при получении данных');
-            }
-        } catch (error) {
-            alert('Ошибка: ' + error.message);
-        }
-    }
-
-    async function fetchChampions() {
-        try {
-            const response = await fetch('http://localhost:7070/save');
-            if (response.ok) {
-                const data = await response.json();
-                displayChampions(data);
+                championsMenu.style.display = 'flex'; // Показать окно лидеров
             } else {
                 throw new Error('Ошибка при получении данных');
             }
@@ -329,50 +298,37 @@
         champions.forEach(champion => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${champion.name}</td>
-                <td>${champion.result}</td>
-                <td>${champion.time}</td>
-            `;
+                    <td>${champion.name}</td>
+                    <td>${champion.result}</td>
+                    <td>${champion.time}</td>
+                `;
             championsTableBody.appendChild(row);
         });
-        championsTableContainer.style.display = 'block'; // Показываем таблицу с чемпионами
     }
 
     function showGameOverMenu() {
         gameOverMenu.style.display = 'flex';
     }
 
-    // Обработчики событий для кнопок управления змейкой
-    leftBtn.addEventListener('click', () => {
-        if (direction !== 'right') {
-            direction = 'left';
-        }
-    });
+    function closeChampionsMenu() {
+        championsMenu.style.display = 'none';
+    }
 
-    upBtn.addEventListener('click', () => {
-        if (direction !== 'down') {
-            direction = 'up';
-        }
-    });
-
-    downBtn.addEventListener('click', () => {
-        if (direction !== 'up') {
-            direction = 'down';
-        }
-    });
-
-    rightBtn.addEventListener('click', () => {
-        if (direction !== 'left') {
-            direction = 'right';
-        }
-    });
-
+    // Event Listeners
     restartBtn.addEventListener('click', restartGame);
     saveBtn.addEventListener('click', saveScore);
     championsBtn.addEventListener('click', fetchChampions);
+    closeChampionsBtn.addEventListener('click', closeChampionsMenu);
 
+    // Control Buttons
+    upBtn.addEventListener('click', () => direction = 'up');
+    downBtn.addEventListener('click', () => direction = 'down');
+    leftBtn.addEventListener('click', () => direction = 'left');
+    rightBtn.addEventListener('click', () => direction = 'right');
+
+    // Initial setup
     generateFood();
-    intervalId = setInterval(update, 700); // Увеличили интервал обновления для замедления змейки
+    intervalId = setInterval(update, 200); // Увеличили интервал обновления для замедления змейки
 </script>
 </body>
 </html>
