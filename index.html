@@ -1,240 +1,47 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Змейка</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    canvas {
-      background-color: #eee;
-      border: 4px solid #000;
-      width: 800px; /* Увеличено в 2 раза */
-      height: 1200px; /* Увеличено в 3 раза */
-    }
-
-    #scoreboard {
-      color: #fff;
-      font-size: 18px;
-      margin-top: 10px;
-    }
-
-    #controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    button {
-      padding: 12px 24px; /* Увеличено */
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px; /* Увеличено */
-    }
-
-    button:hover {
-      background-color: #3e8e41;
-    }
-
-    #menu {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      color: #fff;
-    }
-
-    #menu input {
-      padding: 8px;
-      margin-bottom: 10px;
-    }
-
-    #menu button {
-      padding: 8px 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    #menu button:hover {
-      background-color: #3e8e41;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Змейка</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="scoreboard">Счёт: 0</div>
-  <canvas id="gameCanvas" width="400" height="600"></canvas> <!-- Размеры игрового поля в единицах -->
-  <div id="controls">
-    <button id="startBtn">Старт</button>
-    <div class="row">
-      <button id="leftBtn">Влево</button>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button id="upBtn">Вверх</button>
-        <button id="downBtn">Вниз</button>
-      </div>
-      <button id="rightBtn">Вправо</button>
-    </div>
-  </div>
+<div id="scoreboard">Счёт: 0</div>
+<div style="position: relative;">
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="gameOverMenu">
+        <p>Игра окончена!</p>
+        <input type="text" id="playerName" placeholder="Ваше имя">
+        <button id="saveBtn" class="control-button save-btn">Сохранить</button>
+    </div>
+</div>
+<div id="controls">
+    <button id="leftBtn" class="control-button left-btn">Влево</button>
+    <div class="controls-column">
+        <button id="upBtn" class="control-button up-btn">Вверх</button>
+        <button id="downBtn" class="control-button down-btn">Вниз</button>
+    </div>
+    <button id="rightBtn" class="control-button right-btn">Вправо</button>
+    <div>
+    <button id="restartBtn" class="control-button restart-btn">Старт</button>
+    <button id="championsBtn" class="control-button restart-btn">Лидеры</button>
+    </div>
+</div>
 
-  <div id="menu">
-    <div>Игра окончена!</div>
-    <div>Ваш счёт: <span id="finalScore">0</span></div>
-    <input type="text" id="playerName" placeholder="Введите ваше имя">
-    <button id="saveBtn">Сохранить</button>
-    <button id="restartBtn" style="display:none;">Рестарт</button>
-  </div>
-
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const scoreboard = document.getElementById('scoreboard');
-    const upBtn = document.getElementById('upBtn');
-    const downBtn = document.getElementById('downBtn');
-    const leftBtn = document.getElementById('leftBtn');
-    const rightBtn = document.getElementById('rightBtn');
-    const startBtn = document.getElementById('startBtn');
-    const menu = document.getElementById('menu');
-    const finalScore = document.getElementById('finalScore');
-    const playerNameInput = document.getElementById('playerName');
-    const saveBtn = document.getElementById('saveBtn');
-    const restartBtn = document.getElementById('restartBtn');
-
-    const gridSize = 20;
-    let snake = [{ x: 10, y: 10 }];
-    let food = {};
-    let direction = 'right';
-    let score = 0;
-    let gameOver = false;
-    let intervalId;
-
-    function generateFood() {
-      food = {
-        x: Math.floor(Math.random() * (canvas.width / gridSize)),
-        y: Math.floor(Math.random() * (canvas.height / gridSize))
-      };
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? 'green' : 'lime';
-        ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
-      }
-
-      ctx.fillStyle = 'red';
-      ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
-    }
-
-    function update() {
-      if (gameOver) return;
-
-      const head = { x: snake[0].x, y: snake[0].y };
-
-      switch (direction) {
-        case 'up': head.y--; break;
-        case 'down': head.y++; break;
-        case 'left': head.x--; break;
-        case 'right': head.x++; break;
-      }
-
-      if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize || checkCollision(head)) {
-        gameOver = true;
-        clearInterval(intervalId);
-        showGameOverMenu();
-        return;
-      }
-
-      snake.unshift(head);
-
-      if (head.x === food.x && head.y === food.y) {
-        score++;
-        scoreboard.textContent = 'Счёт: ' + score;
-        generateFood();
-      } else {
-        snake.pop();
-      }
-
-      draw();
-    }
-
-    function checkCollision(head) {
-      for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    function startGame() {
-      snake = [{ x: 10, y: 10 }];
-      generateFood();
-      direction = 'right';
-      score = 0;
-      gameOver = false;
-      scoreboard.textContent = 'Счёт: 0';
-      menu.style.display = 'none';
-      intervalId = setInterval(update, 100);
-    }
-
-    function restartGame() {
-      startGame();
-      restartBtn.style.display = 'none';
-    }
-
-    function showGameOverMenu() {
-      finalScore.textContent = score;
-      menu.style.display = 'flex';
-    }
-
-    function saveScore() {
-      const playerName = playerNameInput.value;
-      const scoreData = {
-        name: playerName,
-        score: score
-      };
-
-      fetch('http://localhost:3000/save-score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(scoreData)
-      }).then(response => response.json()).then(data => {
-        console.log('Score saved:', data);
-        restartBtn.style.display = 'block';
-      }).catch(error => console.error('Error saving score:', error));
-    }
-
-    upBtn.addEventListener('click', () => { if (direction !== 'down') direction = 'up'; });
-    downBtn.addEventListener('click', () => { if (direction !== 'up') direction = 'down'; });
-    leftBtn.addEventListener('click', () => { if (direction !== 'right') direction = 'left'; });
-    rightBtn.addEventListener('click', () => { if (direction !== 'left') direction = 'right'; });
-    startBtn.addEventListener('click', startGame);
-    saveBtn.addEventListener('click', saveScore);
-    restartBtn.addEventListener('click', restartGame);
-
-    generateFood();
-  </script>
+<table id="championsTable">
+    <thead>
+    <tr>
+        <th>Имя</th>
+        <th>Результат</th>
+        <th>Дата</th>
+    </tr>
+    </thead>
+    <tbody id="championsBody">
+    <!-- Здесь будут строки таблицы с данными о чемпионах -->
+    </tbody>
+</table>
+<script src="scripts/game.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/ui.js"></script>
 </body>
 </html>
