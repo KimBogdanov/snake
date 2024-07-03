@@ -16,9 +16,9 @@
         }
 
         .container {
-            width: 95%; /* Ширина контейнера */
-            height: 80vh; /* Высота контейнера */
-            border: 4px solid #000; /* Рамка вокруг всего приложения */
+            width: 95%;
+            height: 80vh;
+            border: 4px solid #000;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -27,10 +27,12 @@
 
         .top-section {
             width: 100%;
+            height: 10%; /* Высота верхней панели - 10% */
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
+            box-sizing: border-box;
         }
 
         #championsBtn, #restartBtn {
@@ -52,19 +54,18 @@
             background-color: #eee;
             border: 4px solid #000;
             width: 100%; /* Ширина игрового поля */
-            height: calc(100% - 120px); /* Высота игрового поля, вычитает высоту кнопок и счёта */
-            max-height: calc(100% - 120px); /* Максимальная высота, чтобы уместить кнопки управления */
+            height: 65%; /* Высота игрового поля */
             box-sizing: border-box;
             margin-top: 10px;
         }
 
         #controls {
+            width: 100%;
+            height: 25%; /* Высота нижних кнопок управления - 25% */
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            max-width: 100%;
-            margin-top: 10px;
+            box-sizing: border-box;
         }
 
         .control-button {

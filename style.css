@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 95%; /* Ширина контейнера */
+    height: 80vh; /* Высота контейнера */
+    border: 4px solid #000; /* Рамка вокруг всего приложения */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.top-section {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.control-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    width: 300px; /* Ширина кнопок управления */
+}
+
+.control-button:hover {
+    background-color: #3e8e41;
+}
+
+#upBtn, #downBtn {
+    margin: 10px 0;
+    height: 80px; /* Высота кнопок Вверх и Вниз */
+}
+
+#leftBtn, #rightBtn {
+    height: 160px; /* Высота кнопок Влево и Вправо */
+}
+
+#scoreboard {
+    color: #fff;
+    font-size: 24px;
+}
+
+#gameCanvas {
+    background-color: #eee;
+    border: 4px solid #000;
+    width: 100%; /* Ширина игрового поля */
+    height: calc(100% - 120px); /* Высота игрового поля, вычитает высоту кнопок и счёта */
+    max-height: calc(100% - 120px); /* Максимальная высота, чтобы уместить кнопки управления */
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+#gameOverMenu, #championsMenu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background-color: #eee;
+    border: 1px solid #000;
+    padding: 20px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 80%;
+    max-width: 300px;
+}
+
+#gameOverMenu input, #gameOverMenu button, #championsMenu button {
+    padding: 8px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#saveBtn, #closeChampionsBtn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: auto;
+    margin-top: 10px;
+}
+
+#saveBtn:hover, #closeChampionsBtn:hover {
+    background-color: #3e8e41;
+}
+
+#championsTable {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#championsTable th, #championsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#championsTable th {
+    background-color: #f2f2f2;
+    color: #333;
+}
