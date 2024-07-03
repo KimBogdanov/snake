@@ -327,12 +327,37 @@
         gameOverMenu.style.display = 'flex';
     }
 
+    // Обработчики событий для кнопок управления змейкой
+    leftBtn.addEventListener('click', () => {
+        if (direction !== 'right') {
+            direction = 'left';
+        }
+    });
+
+    upBtn.addEventListener('click', () => {
+        if (direction !== 'down') {
+            direction = 'up';
+        }
+    });
+
+    downBtn.addEventListener('click', () => {
+        if (direction !== 'up') {
+            direction = 'down';
+        }
+    });
+
+    rightBtn.addEventListener('click', () => {
+        if (direction !== 'left') {
+            direction = 'right';
+        }
+    });
+
     restartBtn.addEventListener('click', restartGame);
     saveBtn.addEventListener('click', saveScore);
     championsBtn.addEventListener('click', fetchChampions);
 
     generateFood();
-    intervalId = setInterval(update, 200); // Увеличили интервал обновления для замедления змейки
+    intervalId = setInterval(update, 700); // Увеличили интервал обновления для замедления змейки
 </script>
 </body>
 </html>
