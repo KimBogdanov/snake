@@ -12,36 +12,56 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
+            width: 80%; /* Ширина контейнера */
+            height: 80vh; /* Высота контейнера */
+            border: 4px solid #000; /* Рамка вокруг всего приложения */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
         }
 
-        canvas {
-            background-color: #eee;
-            border: 4px solid #000;
+        .top-section {
             width: 100%;
-            max-width: 100%;
-            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        #championsBtn, #restartBtn {
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
         }
 
         #scoreboard {
             color: #fff;
-            font-size: 18px;
-            text-align: center;
+            font-size: 24px;
+        }
+
+        #gameCanvas {
+            background-color: #eee;
+            border: 4px solid #000;
+            width: 100%; /* Ширина игрового поля */
+            height: calc(100% - 120px); /* Высота игрового поля, вычитает высоту кнопок и счёта */
+            max-height: calc(100% - 120px); /* Максимальная высота, чтобы уместить кнопки управления */
+            box-sizing: border-box;
             margin-top: 10px;
         }
 
         #controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100%;
             max-width: 100%;
             margin-top: 10px;
@@ -53,18 +73,20 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-            height: 50px;
-            width: 100%;
-            box-sizing: border-box;
+            padding: 15px;
+            width: 100px; /* Ширина кнопок управления */
         }
 
         .control-button:hover {
             background-color: #3e8e41;
+        }
+
+        #upBtn, #downBtn {
+            margin: 10px 0;
         }
 
         #gameOverMenu, #championsMenu {
@@ -127,14 +149,18 @@
 </head>
 <body>
 <div class="container">
-    <canvas id="gameCanvas"></canvas>
-    <div id="scoreboard">Счёт: 0</div>
-    <div id="controls">
-        <button id="restartBtn" class="control-button">Рестарт</button>
-        <button id="upBtn" class="control-button">Вверх</button>
+    <div class="top-section">
         <button id="championsBtn" class="control-button">Лидеры</button>
+        <div id="scoreboard">Счёт: 0</div>
+        <button id="restartBtn" class="control-button">Рестарт</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="controls">
         <button id="leftBtn" class="control-button">Влево</button>
-        <button id="downBtn" class="control-button">Вниз</button>
+        <div>
+            <button id="upBtn" class="control-button">Вверх</button>
+            <button id="downBtn" class="control-button">Вниз</button>
+        </div>
         <button id="rightBtn" class="control-button">Вправо</button>
     </div>
 </div>
@@ -185,8 +211,8 @@
     let intervalId;
 
     function resizeCanvas() {
-        canvas.width = window.innerWidth * 0.8; // Занимаем 80% ширины экрана
-        canvas.height = window.innerHeight * 0.6; // Занимаем 60% высоты экрана
+        canvas.width = canvas.parentElement.clientWidth; // Ширина игрового поля равна ширине родителя
+        canvas.height = canvas.parentElement.clientHeight - 120; // Высота игрового поля вычитает высоту кнопок управления и счёта
     }
 
     function generateFood() {
@@ -241,27 +267,22 @@
     }
 
     function checkCollision(head) {
-        for (let i = 1; i < snake.length; i++) {
-            if (head.x === snake[i].x && head.y === snake[i].y) {
-                return true;
-            }
-        }
-        return false;
+        return snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y);
     }
 
     function restartGame() {
         snake = [{ x: 10, y: 10 }];
-        generateFood();
         direction = 'right';
         score = 0;
+        scoreboard.textContent = 'Счёт: ' + score;
+        generateFood();
         gameOver = false;
-        scoreboard.textContent = 'Счёт: 0';
+        intervalId = setInterval(update, 200);
         gameOverMenu.style.display = 'none';
-        intervalId = setInterval(update, 200); // Увеличили интервал обновления для замедления змейки
     }
 
     async function saveScore() {
-        const playerName = document.getElementById('playerName').value;
+        const playerName = document.getElementById('playerName').value.trim();
         const result = {
             name: playerName,
             score: score
@@ -306,8 +327,8 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                     <td>${champion.name}</td>
-                    <td>${champion.result}</td>
-                    <td>${champion.time}</td>
+                    <td>${champion.score}</td>
+                    <td>${new Date(champion.time).toLocaleString()}</td>
                 `;
             championsTableBody.appendChild(row);
         });
